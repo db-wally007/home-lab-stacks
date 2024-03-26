@@ -56,8 +56,6 @@ services:
       - ${BASE_PATH}/radarr/config:/config
       - ${SHARE}/media/tv:/tv
       - ${SHARE}/media/movies:/movies
-    #networks: #Does not connect to overseer if you use NPM
-    #  - proxy
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -74,8 +72,6 @@ services:
       - ${BASE_PATH}/sonarr/config:/config
       - ${SHARE}/media/tv:/tv
       - ${SHARE}/media/movies:/movies
-    #networks: #Does not connect to overseer if you use NPM
-    #  - proxy
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -90,8 +86,6 @@ services:
       - TZ=${TZ}
     volumes:
       - ${BASE_PATH}/prowlarr/config:/config
-    #networks:
-    #  - proxy
     ports:
       - 9696:9696
     restart: unless-stopped
@@ -106,8 +100,6 @@ services:
       - TZ=${TZ}
     volumes:
       - ${BASE_PATH}/tautulli:/config
-    networks:
-      - proxy
     ports:
       - 8181:8181
     restart: unless-stopped
