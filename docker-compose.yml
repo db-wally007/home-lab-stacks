@@ -8,7 +8,7 @@ TZ = CET
 BASE_PATH = /opt/containers
 #
 # https://trash-guides.info/Hardlinks/Hardlinks-and-Instant-Moves/ # This can be useful for establishing how the media will be presented below
-# UNRAID_SHARE = /mnt/media   # This can also be renamed to "SHARE" or "MEDIA" this is where you will present your media
+SHARE = /mnt/media  # This can also be renamed to "SHARE" or "MEDIA" this is where you will present your media
 #
 # NOTE: This is not a plug and play solution, some research / customization will be required to make this work as intented
 # Feel free to customize ie: remove/change/add containers as needed - one size does not fit all
@@ -34,15 +34,15 @@ services:
       - PGID=${USER_ID}
       - TZ=${TZ}
       - VERSION=docker
-      - PLEX_CLAIM=${PLEX_CLAIM}
+      - PLEX_CLAIM=$PLEX_CLAIM
     ports:
       - 32400:32400
     devices:
      - /dev/dri:/dev/dri #Required for plex HW transcoding / QuickSync
     volumes:
       - ${BASE_PATH}/plex/config:/config
-      - ${UNRAID_SHARE}/media/tv:/tv
-      - ${UNRAID_SHARE}/media/movies:/movies
+      - ${SHARE}/media/tv:/tv
+      - ${SHARE}/media/movies:/movies
     restart: unless-stopped
 
   sabnzbd:
@@ -57,8 +57,8 @@ services:
       - 8080:8080
     volumes:
       - ${BASE_PATH}/sabnzbd/config:/config
-      - ${UNRAID_SHARE}/media/tv:/tv
-      - ${UNRAID_SHARE}/media/movies:/movies
+      - ${SHARE}/media/tv:/tv
+      - ${SHARE}/media/movies:/movies
       - /tmp/sab_downloads:/downloads
       - /tmp/sab_incomplete_downloads:/incomplete-downloads
     restart: unless-stopped
@@ -73,7 +73,8 @@ services:
       - TZ=${TZ}
     volumes:
       - ${BASE_PATH}/radarr/config:/config
-      - ${UNRAID_SHARE}:/share #Access to the entire share
+      - ${SHARE}/media/tv:/tv
+      - ${SHARE}/media/movies:/movies
     #networks: #Does not connect to overseer if you use NPM
     #  - proxy
     ports:
@@ -90,7 +91,8 @@ services:
       - TZ=${TZ}
     volumes:
       - ${BASE_PATH}/sonarr/config:/config
-      - ${UNRAID_SHARE}:/share #Access to the entire share
+      - ${SHARE}/media/tv:/tv
+      - ${SHARE}/media/movies:/movies
     #networks: #Does not connect to overseer if you use NPM
     #  - proxy
     ports:
@@ -155,7 +157,7 @@ services:
       - ${BASE_PATH}/tdarr/server:/app/server
       - ${BASE_PATH}/tdarr/configs:/app/configs
       - ${BASE_PATH}/tdarr/logs:/app/logs
-      - ${UNRAID_SHARE}:/media
+      - ${SHARE}:/media
       - /transcode_cache:/temp
     devices:
      - /dev/dri:/dev/dri #Required for HW transcoding / QuickSync
@@ -171,7 +173,8 @@ services:
       - TZ=${TZ}
     volumes:
       - ${BASE_PATH}/bazarr/config:/config
-      - ${UNRAID_SHARE}:/share
+      - ${SHARE}/media/tv:/tv
+      - ${SHARE}/media/movies:/movies
     ports:
       - 6767:6767
 
