@@ -9,7 +9,6 @@ services:
   plex:
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
-    network_mode: host
     environment:
       - PUID=${USER_ID}
       - PGID=${USER_ID}
@@ -17,7 +16,7 @@ services:
       - VERSION=docker
       - PLEX_CLAIM=$PLEX_CLAIM
     ports:
-      - 32400:32400
+      - 32400:32400/tcp
     devices:
      - /dev/dri:/dev/dri #Required for plex HW transcoding / QuickSync
     volumes:
@@ -27,9 +26,8 @@ services:
     restart: unless-stopped
 
   sabnzbd:
-    image: lscr.io/linuxserver/sabnzbd:4.2.3
+    image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
-    network_mode: host
     environment:
       - PUID=${USER_ID}
       - PGID=${USER_ID}
