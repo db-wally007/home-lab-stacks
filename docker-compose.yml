@@ -1,26 +1,7 @@
-# Welcome to my Ultimate Plex Stack!
-
-# I was hoping this could maybe help some people out when setting up their stack
-#
-# Environment Variable Examples:
-USER_ID = 1000
-TZ = CET
-BASE_PATH = /opt/containers
-#
-# https://trash-guides.info/Hardlinks/Hardlinks-and-Instant-Moves/ # This can be useful for establishing how the media will be presented below
-SHARE = /mnt/media  # This can also be renamed to "SHARE" or "MEDIA" this is where you will present your media
-#
-# NOTE: This is not a plug and play solution, some research / customization will be required to make this work as intented
-# Feel free to customize ie: remove/change/add containers as needed - one size does not fit all
 
 ---
 version: "2.1"
 
-networks: #This is used if you have a reverse proxy. I use Nginx Proxy Manager but anything will do
-  # proxy:
-  #   external:
-  #     name: proxy
-      
 services:
   #Plex - used to display the media
   #
