@@ -50,8 +50,8 @@ services:
       - TZ=CET
     volumes:
       - ${BASE_PATH}/radarr/config:/config
-      - ${SHARE}/10tb:10tb
-      - ${SHARE}/10tb2:10tb2
+      - ${SHARE}/10tb:/10tb
+      - ${SHARE}/10tb2:/10tb2
     ports:
       - 7878:7878
     restart: unless-stopped
