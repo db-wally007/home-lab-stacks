@@ -36,8 +36,11 @@ services:
       - ${BASE_PATH}/sabnzbd/config:/config
       - ${SHARE}/10tb:/10tb
       - ${SHARE}/10tb2:/10tb2
-      - /tmp/sab_downloads:/downloads
-      - /tmp/sab_incomplete_downloads:/incomplete-downloads
+      - /opt/sab_video_downloads:/video_downloads
+      - /opt/sab_incomplete_downloads:/incomplete-downloads
+      - /opt/sab_radarr_downloads:/radarr_downloads
+      - /opt/sab_sonarr_downloads:/sonarr_downloads
+      - /opt/sab_misc_downloads:/misc_downloads
     restart: unless-stopped
 
   #Radarr - movies
