@@ -19,8 +19,8 @@ services:
      - /dev/dri:/dev/dri #Required for plex HW transcoding / QuickSync
     volumes:
       - ${BASE_PATH}/plex/config:/config
-      - ${SHARE}/media/tv:/tv
-      - ${SHARE}/media/movies:/movies
+      - ${SHARE}/10tb:/10tb
+      - ${SHARE}/10tb2:/10tb2
     restart: unless-stopped
 
   sabnzbd:
@@ -34,13 +34,13 @@ services:
       - 8080:8080
     volumes:
       - ${BASE_PATH}/sabnzbd/config:/config
-      - ${SHARE}/media/tv:/tv
-      - ${SHARE}/media/movies:/movies
+      - ${SHARE}/10tb:/10tb
+      - ${SHARE}/10tb2:/10tb2
       - /tmp/sab_downloads:/downloads
       - /tmp/sab_incomplete_downloads:/incomplete-downloads
     restart: unless-stopped
 
-  #Radarr - moview
+  #Radarr - movies
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
@@ -50,8 +50,8 @@ services:
       - TZ=CET
     volumes:
       - ${BASE_PATH}/radarr/config:/config
-      - ${SHARE}/media/tv:/tv
-      - ${SHARE}/media/movies:/movies
+      - ${SHARE}/10tb:10tb
+      - ${SHARE}/10tb2:10tb2
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -66,8 +66,8 @@ services:
       - TZ=CET
     volumes:
       - ${BASE_PATH}/sonarr/config:/config
-      - ${SHARE}/media/tv:/tv
-      - ${SHARE}/media/movies:/movies
+      - ${SHARE}/10tb:/10tb
+      - ${SHARE}/10tb2:/10tb2
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -124,7 +124,8 @@ services:
       - ${BASE_PATH}/tdarr/server:/app/server
       - ${BASE_PATH}/tdarr/configs:/app/configs
       - ${BASE_PATH}/tdarr/logs:/app/logs
-      - ${SHARE}:/media
+      - ${SHARE}/10tb:/10tb
+      - ${SHARE}/10tb2:/10tb2
       - /transcode_cache:/temp
     devices:
      - /dev/dri:/dev/dri #Required for HW transcoding / QuickSync
@@ -140,16 +141,7 @@ services:
       - TZ=CET
     volumes:
       - ${BASE_PATH}/bazarr/config:/config
-      - ${SHARE}/media/tv:/tv
-      - ${SHARE}/media/movies:/movies
+      - ${SHARE}/10tb:/10tb
+      - ${SHARE}/10tb2:/10tb2
     ports:
       - 6767:6767
-
-  #Dozzle - Used to easily view logs of any container in real time!    
-  # dozzle:
-  #   container_name: dozzle
-  #   image: amir20/dozzle:latest
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   ports:
-  #     - 9999:8080 

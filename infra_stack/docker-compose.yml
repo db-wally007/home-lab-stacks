@@ -46,3 +46,12 @@ dockerproxy: ## homepage docker integration helper
   volumes:
     - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
   restart: unless-stopped
+
+  #Dozzle - Used to easily view logs of any container in real time!    
+  # dozzle:
+  #   container_name: dozzle
+  #   image: amir20/dozzle:latest
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   ports:
+  #     - 9999:8080 
