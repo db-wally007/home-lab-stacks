@@ -3,18 +3,16 @@
 version: "2.1"
 
 services:
-  #Plex - used to display the media
-  #
-  #This can also be replaced by Emby/Jellyfin
+  #Plex - media server
   plex:
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
     environment:
-      - PUID=${USER_ID}
-      - PGID=${USER_ID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=CET
       - VERSION=docker
-      - PLEX_CLAIM=$PLEX_CLAIM
+      - PLEX_CLAIM=${PLEX_CLAIM}
     ports:
       - 32400:32400/tcp
     devices:
@@ -29,9 +27,9 @@ services:
     image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
     environment:
-      - PUID=${USER_ID}
-      - PGID=${USER_ID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=CET
     ports:
       - 8080:8080
     volumes:
@@ -42,14 +40,14 @@ services:
       - /tmp/sab_incomplete_downloads:/incomplete-downloads
     restart: unless-stopped
 
-  #Radarr - used to find movies automatically
+  #Radarr - moview
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     environment:
-      - PUID=${USER_ID}
-      - PGID=${USER_ID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=CET
     volumes:
       - ${BASE_PATH}/radarr/config:/config
       - ${SHARE}/media/tv:/tv
@@ -58,14 +56,14 @@ services:
       - 7878:7878
     restart: unless-stopped
     
-  #Sonarr - used to find tv shows automatically
+  #Sonarr - tv shows
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     environment:
-      - PUID=${USER_ID}
-      - PGID=${USER_ID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=CET
     volumes:
       - ${BASE_PATH}/sonarr/config:/config
       - ${SHARE}/media/tv:/tv
@@ -79,32 +77,30 @@ services:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     environment:
-      - PUID=${USER_ID}
-      - PGID=${USER_ID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=CET
     volumes:
       - ${BASE_PATH}/prowlarr/config:/config
     ports:
       - 9696:9696
     restart: unless-stopped
 
-  #Tautulli - for plex statistics. Very useful when troubleshooting performance issues
+  #Tautulli - plex statistics
   tautulli:
     image: lscr.io/linuxserver/tautulli:latest
     container_name: tautulli
     environment:
-      - PUID=${USER_ID}
-      - PGID=${USER_ID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=CET
     volumes:
       - ${BASE_PATH}/tautulli:/config
     ports:
       - 8181:8181
     restart: unless-stopped
 
-  #Tdarr - to transcode videos from one format to another like x265 or H.265
-  #
-  #This container requires a decent amount of horse power to run but will save space in the long run
+  #Tdarr - to transcode videos automatically
   tdarr:
     container_name: tdarr
     image: ghcr.io/haveagitgat/tdarr:latest
@@ -113,9 +109,9 @@ services:
       - 8265:8265 # webUI port
       - 8266:8266 # server port
     environment:
-      - TZ=${TZ}
-      - PUID=${USER_ID}
-      - PGID=${USER_ID}
+      - TZ=CET
+      - PUID=1000
+      - PGID=1000
       - UMASK_SET=002
       - nodeName=ServerNode
       - serverIP=0.0.0.0
@@ -133,15 +129,15 @@ services:
     devices:
      - /dev/dri:/dev/dri #Required for HW transcoding / QuickSync
       
-  #Bazarr - for subtitles. Try to use SRT format if you can rather than PGS due to performance issues
+  #Bazarr - subtitles
   bazarr:
     container_name: bazarr
     image: lscr.io/linuxserver/bazarr:latest
     restart: unless-stopped
     environment:
-      - PUID=${USER_ID}
-      - PGID=${USER_ID}
-      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=CET
     volumes:
       - ${BASE_PATH}/bazarr/config:/config
       - ${SHARE}/media/tv:/tv
