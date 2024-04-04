@@ -26,8 +26,6 @@ services:
   homepage:  ## dashboard website
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
-    entrypoint:
-      - docker-entrypoint.sh
     volumes:
       - ${BASE_PATH}/dashboard:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro ## for docker integration
