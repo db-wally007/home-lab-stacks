@@ -47,21 +47,37 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
     restart: unless-stopped
 
-  grafana-agent:
-    container_name: grafana-agent
-    image: grafana/agent:latest
-    entrypoint:
-      - /bin/grafana-agent run
-      - --disable-reporting=true
-      - --storage.path=/var/lib/grafana-agent-flow
-      - /etc/grafana-agent/
-    environment:
-      - AGENT_MODE=flow
-    ports:
-      - 12345:12345/tcp
+  prometheus:
+    image: prom/prometheus:latest
     volumes:
-      - ${BASE_PATH}/grafana-agent/config/:/etc/grafana-agent
+      - "${BASE_PATH}/prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "${BASE_PATH}/prometheus/data:/prometheus"
+    ports:
+      - 9090:9090
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.enable-remote-write-receiver'
     restart: unless-stopped
+  
+  # grafana-agent:
+  #   container_name: grafana-agent
+  #   image: grafana/agent:latest
+  #   entrypoint:
+  #     - /bin/grafana-agent run
+  #     - --disable-reporting=true
+  #     - --storage.path=/var/lib/grafana-agent-flow
+  #     - /etc/grafana-agent/
+  #   environment:
+  #     - AGENT_MODE=flow
+  #   ports:
+  #     - 12345:12345/tcp
+  #   volumes:
+  #     - ${BASE_PATH}/grafana-agent/config/:/etc/grafana-agent
+  #   restart: unless-stopped
 
   #Dozzle - Used to easily view logs of any container in real time!    
   # dozzle:
