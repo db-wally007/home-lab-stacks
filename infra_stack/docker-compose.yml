@@ -2,6 +2,10 @@
 ---
 version: "3.6"
 
+networks:
+  docker_bridge:
+    driver: bridge
+
 services:
   # portainer:  ## container manager
   #   image: portainer/portainer-ce:latest
@@ -12,7 +16,8 @@ services:
   #   ports:
   #     - 443:9443/tcp
   #   restart: always
-  #   network_mode: bridge
+  #   networks:
+  #     - docker_bridge
   #   volumes:
   #     - ${BASE_PATH}/portainer:/data
   #     - /var/run/docker.sock:/var/run/docker.sock
@@ -30,7 +35,8 @@ services:
     ports:
       - 8585:3000/tcp
     restart: unless-stopped
-    network_mode: bridge
+    networks:
+      - docker_bridge
     volumes:
       - ${BASE_PATH}/dashboard:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro ## for docker integration
@@ -48,7 +54,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
     restart: unless-stopped
-    network_mode: bridge
+    networks:
+      - docker_bridge
 
   prometheus:
     image: prom/prometheus:latest
@@ -66,7 +73,8 @@ services:
       - '--web.enable-lifecycle'
       - '--web.enable-remote-write-receiver'
     restart: unless-stopped
-    network_mode: bridge
+    networks:
+      - docker_bridge
   
   # grafana-agent:
   #   container_name: grafana-agent
@@ -84,4 +92,4 @@ services:
   #     - ${BASE_PATH}/grafana-agent/config/:/etc/grafana-agent
   #   restart: unless-stopped
   #   networks:
-  #     - bridge
+  #     - docker_bridge
