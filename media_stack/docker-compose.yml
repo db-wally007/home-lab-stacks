@@ -55,6 +55,7 @@ services:
       - ${BASE_PATH}/radarr/config:/config
       - ${SHARE}/10tb:/10tb
       - ${SHARE}/10tb2:/10tb2
+      - /opt/sab_radarr_downloads:/radarr_downloads
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -71,6 +72,7 @@ services:
       - ${BASE_PATH}/sonarr/config:/config
       - ${SHARE}/10tb:/10tb
       - ${SHARE}/10tb2:/10tb2
+      - /opt/sab_sonarr_downloads:/sonarr_downloads
     ports:
       - 8989:8989
     restart: unless-stopped
