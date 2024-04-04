@@ -29,9 +29,6 @@ services:
     entrypoint:
       - docker-entrypoint.sh
     environment:
-      # - PUID=1000
-      # - PGID=1000
-      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       - TZ=CET
     ports:
       - 8585:3000/tcp
