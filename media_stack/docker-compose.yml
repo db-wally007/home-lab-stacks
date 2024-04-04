@@ -87,6 +87,8 @@ services:
       - TZ=CET
     volumes:
       - ${BASE_PATH}/prowlarr/config:/config
+      - /opt/sab_radarr_downloads:/radarr_downloads
+      - /opt/sab_sonarr_downloads:/sonarr_downloads
     ports:
       - 9696:9696
     restart: unless-stopped
