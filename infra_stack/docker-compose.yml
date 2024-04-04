@@ -51,7 +51,7 @@ services:
     container_name: grafana-agent
     image: grafana/agent:latest
     entrypoint:
-      - run
+      - /bin/grafana-agent run
       - --disable-reporting=true
       - --storage.path=/var/lib/grafana-agent-flow
       - /etc/grafana-agent/
