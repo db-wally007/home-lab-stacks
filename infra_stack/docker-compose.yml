@@ -12,8 +12,7 @@ services:
   #   ports:
   #     - 443:9443/tcp
   #   restart: always
-  #   networks:
-  #     - bridge
+  #   network_mode: bridge
   #   volumes:
   #     - ${BASE_PATH}/portainer:/data
   #     - /var/run/docker.sock:/var/run/docker.sock
@@ -31,8 +30,7 @@ services:
     ports:
       - 8585:3000/tcp
     restart: unless-stopped
-    networks:
-      - bridge
+    network_mode: bridge
     volumes:
       - ${BASE_PATH}/dashboard:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro ## for docker integration
@@ -50,8 +48,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
     restart: unless-stopped
-    networks:
-      - bridge
+    network_mode: bridge
 
   prometheus:
     image: prom/prometheus:latest
@@ -69,8 +66,7 @@ services:
       - '--web.enable-lifecycle'
       - '--web.enable-remote-write-receiver'
     restart: unless-stopped
-    networks:
-      - bridge
+    network_mode: bridge
   
   # grafana-agent:
   #   container_name: grafana-agent
