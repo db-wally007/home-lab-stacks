@@ -33,7 +33,6 @@ services:
     restart: unless-stopped
     networks:
       - bridge
-    networks:
     volumes:
       - ${BASE_PATH}/dashboard:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro ## for docker integration
