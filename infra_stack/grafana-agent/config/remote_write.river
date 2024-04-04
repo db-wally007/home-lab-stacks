@@ -4,6 +4,6 @@ logging {
 
 prometheus.remote_write "mimir" {
   endpoint {
-    url = "http://localhost:9090/api/prom/push"
+    url = "http://192.168.1.3:9090/api/v1/write"
   }
 }
