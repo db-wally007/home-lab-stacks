@@ -4,6 +4,7 @@ version: "3.6"
 
 networks:
   docker_bridge:
+    name: docker_bridge
     driver: bridge
 
 services:
