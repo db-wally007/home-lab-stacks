@@ -12,6 +12,8 @@ services:
   #   ports:
   #     - 443:9443/tcp
   #   restart: always
+  #   networks:
+  #     - bridge
   #   volumes:
   #     - ${BASE_PATH}/portainer:/data
   #     - /var/run/docker.sock:/var/run/docker.sock
@@ -29,6 +31,9 @@ services:
     ports:
       - 8585:3000/tcp
     restart: unless-stopped
+    networks:
+      - bridge
+    networks:
     volumes:
       - ${BASE_PATH}/dashboard:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro ## for docker integration
@@ -46,6 +51,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
     restart: unless-stopped
+    networks:
+      - bridge
 
   prometheus:
     image: prom/prometheus:latest
@@ -63,6 +70,8 @@ services:
       - '--web.enable-lifecycle'
       - '--web.enable-remote-write-receiver'
     restart: unless-stopped
+    networks:
+      - bridge
   
   # grafana-agent:
   #   container_name: grafana-agent
@@ -79,12 +88,5 @@ services:
   #   volumes:
   #     - ${BASE_PATH}/grafana-agent/config/:/etc/grafana-agent
   #   restart: unless-stopped
-
-  #Dozzle - Used to easily view logs of any container in real time!    
-  # dozzle:
-  #   container_name: dozzle
-  #   image: amir20/dozzle:latest
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   ports:
-  #     - 9999:8080 
+  #   networks:
+  #     - bridge
