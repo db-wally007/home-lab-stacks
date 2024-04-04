@@ -122,17 +122,17 @@ services:
      - /dev/dri:/dev/dri #Required for HW transcoding / QuickSync
       
   #Bazarr - subtitles
-  bazarr:
-    container_name: bazarr
-    image: lscr.io/linuxserver/bazarr:latest
-    restart: unless-stopped
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=CET
-    volumes:
-      - ${BASE_PATH}/bazarr/config:/config
-      - ${SHARE}/10tb:/10tb
-      - ${SHARE}/10tb2:/10tb2
-    ports:
-      - 6767:6767
+  # bazarr:
+  #   container_name: bazarr
+  #   image: lscr.io/linuxserver/bazarr:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=CET
+  #   volumes:
+  #     - ${BASE_PATH}/bazarr/config:/config
+  #     - ${SHARE}/10tb:/10tb
+  #     - ${SHARE}/10tb2:/10tb2
+  #   ports:
+  #     - 6767:6767

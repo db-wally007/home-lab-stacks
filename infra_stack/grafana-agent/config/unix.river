@@ -1,0 +1,60 @@
+prometheus.exporter.unix "integrations_node_exporter" {
+	enable_collectors  = ["systemd"]
+	disable_collectors = ["ipvs", "infiniband", "xfs", "zfs"]
+
+	disk {
+		device_exclude = "^(dm.*)$"
+	}
+
+	filesystem {
+		fs_types_exclude     = "^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|tmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$"
+		mount_points_exclude = "^/(dev|run|proc|sys)($|/)"
+		mount_timeout        = "5s"
+	}
+
+	netclass {
+		ignored_devices = "^(veth.*|cali.*|[a-f0-9]{15}|lo)$"
+	}
+
+	netdev {
+		device_exclude = "^(veth.*|cali.*|[a-f0-9]{15}|lo)$"
+	}
+
+	systemd {
+		enable_restarts = true
+		start_time      = true
+		unit_exclude    = ".+\\.(automount|device|mount|scope|slice)"
+		unit_include    = "^(grafana.*|container.*|)$"
+	}
+
+	textfile {
+		directory = "/var/log/node_exporter"
+	}
+}
+
+discovery.relabel "integrations_node_exporter" {
+	targets = prometheus.exporter.unix.integrations_node_exporter.targets
+
+	rule {
+		source_labels = ["job"]
+		target_label  = "job"
+		replacement   = "node_exporter-20s"
+	}
+}
+
+prometheus.scrape "integrations_node_exporter" {
+	targets         = discovery.relabel.integrations_node_exporter.output
+	forward_to      = [prometheus.relabel.integrations_node_exporter.receiver]
+	job_name        = "node_exporter-20s"
+	scrape_interval = "20s"
+}
+
+prometheus.relabel "integrations_node_exporter" {
+	forward_to = [prometheus.remote_write.mimir.receiver]
+
+	rule {
+		source_labels = ["__name__"]
+		regex         = "node_scrape_collector_.+"
+		action        = "drop"
+	}
+}

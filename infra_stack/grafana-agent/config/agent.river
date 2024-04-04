@@ -1,0 +1,8 @@
+prometheus.exporter.self "agent" { }
+
+prometheus.scrape "agent" {
+	targets         = prometheus.exporter.self.agent.targets
+	forward_to      = [prometheus.remote_write.mimir.receiver]
+	job_name        = "grafana_agent-20s"
+	scrape_interval = "20s"
+}

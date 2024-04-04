@@ -1,0 +1,9 @@
+logging {
+	level = "warn"
+}
+
+prometheus.remote_write "mimir" {
+  endpoint {
+    url = "https://mimir:9096/api/v1/push"
+  }
+}

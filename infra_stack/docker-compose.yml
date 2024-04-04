@@ -47,6 +47,22 @@ dockerproxy: ## homepage docker integration helper
     - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
   restart: unless-stopped
 
+grafana-agent:
+  container_name: grafana-agent
+  image: grafana/agent:latest
+  entrypoint:
+    - run
+    - --disable-reporting=true
+    - --storage.path=/var/lib/grafana-agent-flow
+    - /etc/grafana-agent/
+  environment:
+    - AGENT_MODE=flow
+  ports:
+    - 12345:12345/tcp
+  volumes:
+    - ${BASE_PATH}/grafana-agent/config/:/etc/grafana-agent
+  restart: unless-stopped
+
   #Dozzle - Used to easily view logs of any container in real time!    
   # dozzle:
   #   container_name: dozzle

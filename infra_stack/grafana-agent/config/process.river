@@ -1,0 +1,34 @@
+prometheus.exporter.process "integrations_process_exporter" {
+	matcher {
+		name    = "{{.Comm}}_{{.Username}}"
+		cmdline = [".+"]
+	}
+	track_threads = false
+}
+
+discovery.relabel "integrations_process_exporter" {
+	targets = prometheus.exporter.process.integrations_process_exporter.targets
+
+	rule {
+		source_labels = ["job"]
+		target_label  = "job"
+		replacement   = "process_exporter-20s"
+	}
+}
+
+prometheus.scrape "integrations_process_exporter" {
+	targets         = discovery.relabel.integrations_process_exporter.output
+	forward_to      = [prometheus.relabel.integrations_process_exporter.receiver]
+	job_name        = "process_exporter-20s"
+	scrape_interval = "20s"
+}
+
+prometheus.relabel "integrations_process_exporter" {
+	forward_to = [prometheus.remote_write.mimir.receiver]
+
+	rule {
+		source_labels = ["__name__"]
+		regex         = "^(namedprocess_namegroup_memory_bytes|namedprocess_namegroup_cpu_seconds_total)$"
+		action        = "keep"
+	}
+}
