@@ -3,18 +3,18 @@
 version: "3.6"
 
 services:
-  portainer:  ## container manager
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    environment:
-      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      - TZ=CET
-    ports:
-      - 443:9443/tcp
-    restart: always
-    volumes:
-      - ${BASE_PATH}/portainer:/data
-      - /var/run/docker.sock:/var/run/docker.sock
+  # portainer:  ## container manager
+  #   image: portainer/portainer-ce:latest
+  #   container_name: portainer
+  #   environment:
+  #     - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  #     - TZ=CET
+  #   ports:
+  #     - 443:9443/tcp
+  #   restart: always
+  #   volumes:
+  #     - ${BASE_PATH}/portainer:/data
+  #     - /var/run/docker.sock:/var/run/docker.sock
 
   homepage:  ## dashboard website
     image: ghcr.io/gethomepage/homepage:latest
