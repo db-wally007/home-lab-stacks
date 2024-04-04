@@ -28,16 +28,14 @@ services:
     container_name: homepage
     entrypoint:
       - docker-entrypoint.sh
-    environment:
-      - TZ=CET
     volumes:
       - ${BASE_PATH}/dashboard:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro ## for docker integration
     ports:
       - 8585:3000/tcp
     restart: unless-stopped
-    # networks:
-    #   - docker_bridge
+    networks:
+      - docker_bridge
 
   dockerproxy: ## homepage docker integration helper
     image: ghcr.io/tecnativa/docker-socket-proxy:latest
