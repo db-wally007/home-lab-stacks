@@ -1,9 +1,14 @@
 
 ---
-version: "2.1"
+
+version: "3.6"
+
+networks:
+  docker_bridge:
+    name: docker_bridge
+    driver: bridge
 
 services:
-  #Plex - media server
   plex:
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
@@ -21,6 +26,8 @@ services:
       - ${BASE_PATH}/plex/config:/config
       - ${SHARE}/10tb:/10tb
       - ${SHARE}/10tb2:/10tb2
+    networks:
+      - docker_bridge
     restart: unless-stopped
 
   sabnzbd:
@@ -41,9 +48,10 @@ services:
       - /opt/sab_radarr_downloads:/radarr_downloads
       - /opt/sab_sonarr_downloads:/sonarr_downloads
       - /opt/sab_misc_downloads:/misc_downloads
+    networks:
+      - docker_bridge
     restart: unless-stopped
 
-  #Radarr - movies
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
@@ -58,9 +66,10 @@ services:
       - /opt/sab_radarr_downloads:/radarr_downloads
     ports:
       - 7878:7878
+    networks:
+      - docker_bridge
     restart: unless-stopped
     
-  #Sonarr - tv shows
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
@@ -75,9 +84,10 @@ services:
       - /opt/sab_sonarr_downloads:/sonarr_downloads
     ports:
       - 8989:8989
+    networks:
+      - docker_bridge
     restart: unless-stopped
 
-  #Tautulli - plex statistics
   tautulli:
     image: lscr.io/linuxserver/tautulli:latest
     container_name: tautulli
@@ -89,10 +99,11 @@ services:
       - ${BASE_PATH}/tautulli:/config
     ports:
       - 8181:8181
+    networks:
+      - docker_bridge
     restart: unless-stopped
 
-  #Tdarr - to transcode videos automatically
-  tdarr:
+  tdarr: # transcode videos automatically
     container_name: tdarr
     image: ghcr.io/haveagitgat/tdarr:latest
     restart: unless-stopped
@@ -120,6 +131,8 @@ services:
       - /transcode_cache:/temp
     devices:
      - /dev/dri:/dev/dri #Required for HW transcoding / QuickSync
+    networks:
+      - docker_bridge
       
   #Bazarr - subtitles
   # bazarr:
@@ -136,3 +149,5 @@ services:
   #     - ${SHARE}/10tb2:/10tb2
   #   ports:
   #     - 6767:6767
+  #   networks:
+  #     - docker_bridge
