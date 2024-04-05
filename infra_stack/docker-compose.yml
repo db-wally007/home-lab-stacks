@@ -85,6 +85,8 @@ services:
     user: '0'
     ports:
       - '8081:3000'
+    networks:
+      - docker_bridge
     volumes:
       - ${BASE_PATH}/grafana/data:/var/lib/grafana
       # - ${BASE_PATH}/grafana/config:/etc/grafana
