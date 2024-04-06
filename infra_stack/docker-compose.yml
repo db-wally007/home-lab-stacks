@@ -12,20 +12,20 @@ volumes:
   prometheus_data: {}
 
 services:
-  # portainer:  ## container manager
-  #   image: portainer/portainer-ce:latest
-  #   container_name: portainer
-  #   environment:
-  #     - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-  #     - TZ=CET
-  #   ports:
-  #     - 443:9443/tcp
-  #   restart: always
-  #   networks:
-  #     - docker_bridge
-  #   volumes:
-  #     - ${BASE_PATH}/portainer:/data
-  #     - /var/run/docker.sock:/var/run/docker.sock
+  portainer:  ## container manager
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    environment:
+      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - TZ=CET
+    ports:
+      - 443:9443/tcp
+    restart: always
+    networks:
+      - docker_bridge
+    volumes:
+      - ${BASE_PATH}/portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock
 
   homepage:  ## dashboard website
     image: ghcr.io/gethomepage/homepage:latest
@@ -89,7 +89,6 @@ services:
       - docker_bridge
     volumes:
       - ${BASE_PATH}/grafana/data:/var/lib/grafana
-      # - ${BASE_PATH}/grafana/config:/etc/grafana
 
   # grafana-agent:
   #   container_name: grafana-agent
