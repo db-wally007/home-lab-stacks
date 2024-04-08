@@ -151,7 +151,7 @@ services:
     command: /app/update.sh
     networks:
       - docker_bridge
-
+  
   #Bazarr - subtitles
   # bazarr:
   #   container_name: bazarr

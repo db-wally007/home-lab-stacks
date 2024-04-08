@@ -19,13 +19,13 @@ services:
       - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       - TZ=CET
     ports:
-      - 443:9443/tcp
+      - 9443:9443/tcp
     restart: always
     networks:
       - docker_bridge
     volumes:
       - ${BASE_PATH}/portainer:/data
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /run/podman/podman.sock:/var/run/docker.sock
 
   homepage:  ## dashboard website
     image: ghcr.io/gethomepage/homepage:latest
@@ -36,7 +36,7 @@ services:
       - TZ=CET
     volumes:
       - ${BASE_PATH}/dashboard:/app/config
-      - /var/run/docker.sock:/var/run/docker.sock:ro ## for docker integration
+      - /run/podman/podman.sock:/var/run/docker.sock:ro ## for docker integration
     ports:
       - 8585:3000/tcp
     restart: unless-stopped
@@ -54,7 +54,7 @@ services:
     ports:
       - 127.0.0.1:2375:2375
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
+      - /run/podman/podman.sock:/var/run/docker.sock:ro # Mounted as read-only
     restart: unless-stopped
     networks:
       - docker_bridge
@@ -89,7 +89,40 @@ services:
       - docker_bridge
     volumes:
       - ${BASE_PATH}/grafana/data:/var/lib/grafana
+    environment:
+      - GF_SERVER_ROOT_URL=http://grafana
+      - GF_SERVER_DOMAIN=homelab-cz.org
+      - GF_SERVER_ENFORCE_DOMAIN=false
+      - GR_SERVER_SERVE_FROM_SUB_PATH=true
 
+  tunnel:
+    container_name: tunnel
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    networks:
+      - docker_bridge
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+
+  nginxproxymanager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginxproxymanager
+    restart: unless-stopped
+    ports:
+      - '443:443' # Public HTTPS Port
+      - '80:80' # Public HTTP Port
+      - '81:81' # Admin Web Port
+    environment:
+      DISABLE_IPV6: 'true'
+    volumes:
+      - ${BASE_PATH}/nginxproxymanager/data:/data
+      - ${BASE_PATH}/nginxproxymanager/letsencrypt:/etc/letsencrypt
+    networks:
+      - docker_bridge
+    restart: unless-stopped
+
+  
   # grafana-agent:
   #   container_name: grafana-agent
   #   image: grafana/agent:latest
