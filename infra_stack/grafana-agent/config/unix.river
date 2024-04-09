@@ -1,7 +1,11 @@
 prometheus.exporter.unix "integrations_node_exporter" {
 	enable_collectors  = ["systemd"]
 	disable_collectors = ["ipvs", "infiniband", "xfs", "zfs"]
-
+    procfs_path        = "/hostfs/proc"
+	sysfs_path         = "/hostfs/sys"
+	rootfs_path        = "/rootfs"
+	udev_data_path     = "/hostfs/udev"
+	
 	disk {
 		device_exclude = "^(dm.*)$"
 	}
@@ -24,7 +28,7 @@ prometheus.exporter.unix "integrations_node_exporter" {
 		enable_restarts = true
 		start_time      = true
 		unit_exclude    = ".+\\.(automount|device|mount|scope|slice)"
-		unit_include    = "^(grafana.*|container.*|)$"
+		unit_include    = "^(grafana.*|container.*|podman.*)$"
 	}
 
 	textfile {

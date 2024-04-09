@@ -39,7 +39,7 @@ services:
       - /run/podman/podman.sock:/var/run/docker.sock:ro ## for docker integration
     ports:
       - 8585:3000/tcp
-    restart: unless-stopped
+    restart: always
     networks:
       - docker_bridge
 
@@ -55,7 +55,7 @@ services:
       - 127.0.0.1:2375:2375
     volumes:
       - /run/podman/podman.sock:/var/run/docker.sock:ro # Mounted as read-only
-    restart: unless-stopped
+    restart: always
     networks:
       - docker_bridge
 
@@ -74,15 +74,15 @@ services:
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
       - '--web.enable-remote-write-receiver'
-    restart: unless-stopped
+    restart: always
     networks:
       - docker_bridge
 
   grafana:
     image: grafana/grafana-enterprise
     container_name: grafana
-    restart: unless-stopped
-    user: '0'
+    restart: always
+    user: "0:0"
     ports:
       - '8081:3000'
     networks:
@@ -98,7 +98,7 @@ services:
   tunnel:
     container_name: tunnel
     image: cloudflare/cloudflared:latest
-    restart: unless-stopped
+    restart: always
     command: tunnel run
     networks:
       - docker_bridge
@@ -108,7 +108,7 @@ services:
   nginxproxymanager:
     image: jc21/nginx-proxy-manager:latest
     container_name: nginxproxymanager
-    restart: unless-stopped
+    restart: always
     ports:
       - '443:443' # Public HTTPS Port
       - '80:80' # Public HTTP Port
@@ -120,23 +120,24 @@ services:
       - ${BASE_PATH}/nginxproxymanager/letsencrypt:/etc/letsencrypt
     networks:
       - docker_bridge
-    restart: unless-stopped
+    restart: always
 
-  
-  # grafana-agent:
-  #   container_name: grafana-agent
-  #   image: grafana/agent:latest
-  #   entrypoint:
-  #     - /bin/grafana-agent run
-  #     - --disable-reporting=true
-  #     - --storage.path=/var/lib/grafana-agent-flow
-  #     - /etc/grafana-agent/
-  #   environment:
-  #     - AGENT_MODE=flow
-  #   ports:
-  #     - 12345:12345/tcp
-  #   volumes:
-  #     - ${BASE_PATH}/grafana-agent/config/:/etc/grafana-agent
-  #   restart: unless-stopped
-  #   networks:
-  #     - docker_bridge
+  grafana-agent:
+    container_name: grafana-agent
+    image: grafana/agent:latest
+    hostname: server
+    command: run --server.http.listen-addr=0.0.0.0:12345 /etc/grafana-agent/
+    environment:
+      - AGENT_MODE=flow
+    # ports:
+    #   - 12345:12345/tcp
+    volumes:
+      - ${BASE_PATH}/grafana-agent/config/:/etc/grafana-agent
+      - /sys:/hostfs/sys:ro
+      - /proc:/hostfs/proc:ro
+      - /run/udev:/hostfs/udev:ro
+      - /:/rootfs:ro
+      - /var/log/node_exporter:/var/log/node_exporter:ro
+      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
+    restart: always
+    network_mode: host

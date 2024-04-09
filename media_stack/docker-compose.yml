@@ -29,7 +29,7 @@ services:
       - /opt/xmltv_data:/data
     networks:
       - docker_bridge
-    restart: unless-stopped
+    restart: always
 
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:latest
@@ -51,7 +51,7 @@ services:
       - /opt/sab_misc_downloads:/misc_downloads
     networks:
       - docker_bridge
-    restart: unless-stopped
+    restart: always
 
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -69,7 +69,7 @@ services:
       - 7878:7878
     networks:
       - docker_bridge
-    restart: unless-stopped
+    restart: always
     
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
@@ -87,7 +87,7 @@ services:
       - 8989:8989
     networks:
       - docker_bridge
-    restart: unless-stopped
+    restart: always
 
   tautulli:
     image: lscr.io/linuxserver/tautulli:latest
@@ -102,38 +102,38 @@ services:
       - 8181:8181
     networks:
       - docker_bridge
-    restart: unless-stopped
+    restart: always
 
-  tdarr: # transcode videos automatically
-    container_name: tdarr
-    image: ghcr.io/haveagitgat/tdarr:latest
-    restart: unless-stopped
-    ports:
-      - 8265:8265 # webUI port
-      - 8266:8266 # server port
-    environment:
-      - TZ=CET
-      - PUID=1000
-      - PGID=1000
-      - UMASK_SET=002
-      - nodeName=ServerNode
-      - serverIP=0.0.0.0
-      - serverPort=8266
-      - webUIPort=8265
-      - internalNode=true
-      - inContainer=true
-      - ffmpegVersion=6
-    volumes:
-      - ${BASE_PATH}/tdarr/server:/app/server
-      - ${BASE_PATH}/tdarr/configs:/app/configs
-      - ${BASE_PATH}/tdarr/logs:/app/logs
-      - ${SHARE}/10tb:/10tb
-      - ${SHARE}/10tb2:/10tb2
-      - /transcode_cache:/temp
-    devices:
-     - /dev/dri:/dev/dri #Required for HW transcoding / QuickSync
-    networks:
-      - docker_bridge
+  # tdarr: # transcode videos automatically
+  #   container_name: tdarr
+  #   image: ghcr.io/haveagitgat/tdarr:latest
+  #   restart: always
+  #   ports:
+  #     - 8265:8265 # webUI port
+  #     - 8266:8266 # server port
+  #   environment:
+  #     - TZ=CET
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - UMASK_SET=002
+  #     - nodeName=ServerNode
+  #     - serverIP=0.0.0.0
+  #     - serverPort=8266
+  #     - webUIPort=8265
+  #     - internalNode=true
+  #     - inContainer=true
+  #     - ffmpegVersion=6
+  #   volumes:
+  #     - ${BASE_PATH}/tdarr/server:/app/server
+  #     - ${BASE_PATH}/tdarr/configs:/app/configs
+  #     - ${BASE_PATH}/tdarr/logs:/app/logs
+  #     - ${SHARE}/10tb:/10tb
+  #     - ${SHARE}/10tb2:/10tb2
+  #     - /transcode_cache:/temp
+  #   devices:
+  #    - /dev/dri:/dev/dri #Required for HW transcoding / QuickSync
+  #   networks:
+  #     - docker_bridge
 
   webgrabplus:
     image: lscr.io/linuxserver/webgrabplus:latest
@@ -147,7 +147,7 @@ services:
     volumes:
       - ${BASE_PATH}/webgrabplus/config:/config
       - /opt/xmltv_data:/data
-    # restart: unless-stopped
+    # restart: always
     command: /app/update.sh
     networks:
       - docker_bridge
@@ -156,7 +156,7 @@ services:
   # bazarr:
   #   container_name: bazarr
   #   image: lscr.io/linuxserver/bazarr:latest
-  #   restart: unless-stopped
+  #   restart: always
   #   environment:
   #     - PUID=1000
   #     - PGID=1000
