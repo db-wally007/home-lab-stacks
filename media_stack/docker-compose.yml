@@ -147,7 +147,6 @@ services:
     volumes:
       - ${BASE_PATH}/webgrabplus/config:/config
       - /opt/xmltv_data:/data
-    # restart: always
     command: /app/update.sh
     networks:
       - docker_bridge
