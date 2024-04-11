@@ -150,7 +150,25 @@ services:
     command: /app/update.sh
     networks:
       - docker_bridge
-  
+
+  fileflows:
+    image: revenz/fileflows
+    container_name: fileflows
+    environment:
+      - TZ=CET
+      - TempPathHost=/opt/containers/fileflows/temp
+    volumes:
+      # - /run/podman/podman.sock:/var/run/docker.sock:ro
+      - /opt/containers/fileflows/data:/app/Data
+      - /opt/containers/fileflows/logs:/app/Logs
+      - /opt/containers/fileflows/temp:/temp
+      - ${SHARE}/10tb:/media
+    ports:
+      - 19200:5000
+    restart: unless-stopped
+    devices:
+     - /dev/dri:/dev/dri
+
   #Bazarr - subtitles
   # bazarr:
   #   container_name: bazarr
