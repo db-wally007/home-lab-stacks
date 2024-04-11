@@ -24,7 +24,7 @@ services:
     networks:
       - docker_bridge
     volumes:
-      - ${BASE_PATH}/portainer:/data
+      - /opt/containers/portainer:/data
       - /run/podman/podman.sock:/var/run/docker.sock
 
   homepage:  ## dashboard website
@@ -35,7 +35,7 @@ services:
       - PGID=1000
       - TZ=CET
     volumes:
-      - ${BASE_PATH}/dashboard:/app/config
+      - /opt/containers/dashboard:/app/config
       - /run/podman/podman.sock:/var/run/docker.sock:ro ## for docker integration
     ports:
       - 8585:3000/tcp
@@ -63,7 +63,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ${BASE_PATH}/prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /opt/containers/prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     ports:
       - 9090:9090/tcp
@@ -79,7 +79,7 @@ services:
       - docker_bridge
 
   grafana:
-    image: grafana/grafana-enterprise
+    image: grafana/grafana-enterprise:latest
     container_name: grafana
     restart: always
     user: "0:0"
@@ -88,7 +88,7 @@ services:
     networks:
       - docker_bridge
     volumes:
-      - ${BASE_PATH}/grafana/data:/var/lib/grafana
+      - /opt/containers/grafana/data:/var/lib/grafana
     environment:
       - GF_SERVER_ROOT_URL=http://grafana
       - GF_SERVER_DOMAIN=homelab-cz.org
@@ -116,8 +116,8 @@ services:
     environment:
       DISABLE_IPV6: 'true'
     volumes:
-      - ${BASE_PATH}/nginxproxymanager/data:/data
-      - ${BASE_PATH}/nginxproxymanager/letsencrypt:/etc/letsencrypt
+      - /opt/containers/nginxproxymanager/data:/data
+      - /opt/containers/nginxproxymanager/letsencrypt:/etc/letsencrypt
     networks:
       - docker_bridge
     restart: always
@@ -132,7 +132,7 @@ services:
     # ports:
     #   - 12345:12345/tcp
     volumes:
-      - ${BASE_PATH}/grafana-agent/config/:/etc/grafana-agent
+      - /opt/containers/grafana-agent/config/:/etc/grafana-agent
       - /sys:/hostfs/sys:ro
       - /proc:/hostfs/proc:ro
       - /run/udev:/hostfs/udev:ro
@@ -156,7 +156,7 @@ services:
       - UP_UNIFI_DYNAMIC=false
       - UP_PROMETHEUS_HTTP_LISTEN=0.0.0.0:9130
       - UP_PROMETHEUS_NAMESPACE=unpoller
-      - UP_UNIFI_CONTROLLER_0_PASS=
+      - UP_UNIFI_CONTROLLER_0_PASS=${UNPOLLER_PASSWORD}
       - UP_UNIFI_CONTROLLER_0_SAVE_ALARMS=true
       - UP_UNIFI_CONTROLLER_0_SAVE_ANOMALIES=true
       - UP_UNIFI_CONTROLLER_0_SAVE_DPI=true

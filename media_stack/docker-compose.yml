@@ -23,9 +23,9 @@ services:
     devices:
      - /dev/dri:/dev/dri #Required for plex HW transcoding / QuickSync
     volumes:
-      - ${BASE_PATH}/plex/config:/config
-      - ${SHARE}/10tb:/10tb
-      - ${SHARE}/10tb2:/10tb2
+      - /opt/containers/plex/config:/config
+      - /mnt/10tb:/10tb
+      - /mnt/10tb2:/10tb2
       - /opt/xmltv_data:/data
     networks:
       - docker_bridge
@@ -41,9 +41,9 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ${BASE_PATH}/sabnzbd/config:/config
-      - ${SHARE}/10tb:/10tb
-      - ${SHARE}/10tb2:/10tb2
+      - /opt/containers/sabnzbd/config:/config
+      - /mnt/10tb:/10tb
+      - /mnt/10tb2:/10tb2
       - /opt/sab_video_downloads:/video_downloads
       - /opt/sab_incomplete_downloads:/incomplete-downloads
       - /opt/sab_radarr_downloads:/radarr_downloads
@@ -61,9 +61,9 @@ services:
       - PGID=1000
       - TZ=CET
     volumes:
-      - ${BASE_PATH}/radarr/config:/config
-      - ${SHARE}/10tb:/10tb
-      - ${SHARE}/10tb2:/10tb2
+      - /opt/containers/radarr/config:/config
+      - /mnt/10tb:/10tb
+      - /mnt/10tb2:/10tb2
       - /opt/sab_radarr_downloads:/radarr_downloads
     ports:
       - 7878:7878
@@ -79,9 +79,9 @@ services:
       - PGID=1000
       - TZ=CET
     volumes:
-      - ${BASE_PATH}/sonarr/config:/config
-      - ${SHARE}/10tb:/10tb
-      - ${SHARE}/10tb2:/10tb2
+      - /opt/containers/sonarr/config:/config
+      - /mnt/10tb:/10tb
+      - /mnt/10tb2:/10tb2
       - /opt/sab_sonarr_downloads:/sonarr_downloads
     ports:
       - 8989:8989
@@ -97,7 +97,7 @@ services:
       - PGID=1000
       - TZ=CET
     volumes:
-      - ${BASE_PATH}/tautulli:/config
+      - /opt/containers/tautulli:/config
     ports:
       - 8181:8181
     networks:
@@ -124,11 +124,11 @@ services:
   #     - inContainer=true
   #     - ffmpegVersion=6
   #   volumes:
-  #     - ${BASE_PATH}/tdarr/server:/app/server
-  #     - ${BASE_PATH}/tdarr/configs:/app/configs
-  #     - ${BASE_PATH}/tdarr/logs:/app/logs
-  #     - ${SHARE}/10tb:/10tb
-  #     - ${SHARE}/10tb2:/10tb2
+  #     - /opt/containers/tdarr/server:/app/server
+  #     - /opt/containers/tdarr/configs:/app/configs
+  #     - /opt/containers/tdarr/logs:/app/logs
+  #     - /mnt/10tb:/10tb
+  #     - /mnt/10tb2:/10tb2
   #     - /transcode_cache:/temp
   #   devices:
   #    - /dev/dri:/dev/dri #Required for HW transcoding / QuickSync
@@ -145,29 +145,29 @@ services:
       - PGID=1000
       - TZ=CET
     volumes:
-      - ${BASE_PATH}/webgrabplus/config:/config
+      - /opt/containers/webgrabplus/config:/config
       - /opt/xmltv_data:/data
     command: /app/update.sh
     networks:
       - docker_bridge
 
-  fileflows:
-    image: revenz/fileflows
-    container_name: fileflows
-    environment:
-      - TZ=CET
-      - TempPathHost=/opt/containers/fileflows/temp
-    volumes:
-      # - /run/podman/podman.sock:/var/run/docker.sock:ro
-      - /opt/containers/fileflows/data:/app/Data
-      - /opt/containers/fileflows/logs:/app/Logs
-      - /opt/containers/fileflows/temp:/temp
-      - ${SHARE}/10tb:/media
-    ports:
-      - 19200:5000
-    restart: unless-stopped
-    devices:
-     - /dev/dri:/dev/dri
+  # fileflows:
+  #   image: revenz/fileflows
+  #   container_name: fileflows
+  #   environment:
+  #     - TZ=CET
+  #     - TempPathHost=/opt/containers/fileflows/temp
+  #   volumes:
+  #     # - /run/podman/podman.sock:/var/run/docker.sock:ro
+  #     - /opt/containers/fileflows/data:/app/Data
+  #     - /opt/containers/fileflows/logs:/app/Logs
+  #     - /opt/containers/fileflows/temp:/temp
+  #     - /mnt/10tb:/media
+  #   ports:
+  #     - 19200:5000
+  #   restart: unless-stopped
+  #   devices:
+  #    - /dev/dri:/dev/dri
 
   #Bazarr - subtitles
   # bazarr:
@@ -179,9 +179,9 @@ services:
   #     - PGID=1000
   #     - TZ=CET
   #   volumes:
-  #     - ${BASE_PATH}/bazarr/config:/config
-  #     - ${SHARE}/10tb:/10tb
-  #     - ${SHARE}/10tb2:/10tb2
+  #     - /opt/containers/bazarr/config:/config
+  #     - /mnt/10tb:/10tb
+  #     - /mnt/10tb2:/10tb2
   #   ports:
   #     - 6767:6767
   #   networks:
