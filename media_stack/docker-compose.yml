@@ -10,7 +10,7 @@ networks:
 
 services:
   plex:
-    image: lscr.io/linuxserver/plex:latest
+    image: linuxserver/plex:latest
     container_name: plex
     environment:
       - PUID=1000
@@ -32,7 +32,7 @@ services:
     restart: always
 
   sabnzbd:
-    image: lscr.io/linuxserver/sabnzbd:latest
+    image: linuxserver/sabnzbd:latest
     container_name: sabnzbd
     environment:
       - PUID=1000
@@ -54,7 +54,7 @@ services:
     restart: always
 
   radarr:
-    image: lscr.io/linuxserver/radarr:latest
+    image: linuxserver/radarr:latest
     container_name: radarr
     environment:
       - PUID=1000
@@ -72,7 +72,7 @@ services:
     restart: always
     
   sonarr:
-    image: lscr.io/linuxserver/sonarr:latest
+    image: linuxserver/sonarr:latest
     container_name: sonarr
     environment:
       - PUID=1000
@@ -90,7 +90,7 @@ services:
     restart: always
 
   tautulli:
-    image: lscr.io/linuxserver/tautulli:latest
+    image: linuxserver/tautulli:latest
     container_name: tautulli
     environment:
       - PUID=1000
@@ -136,7 +136,7 @@ services:
   #     - docker_bridge
 
   webgrabplus:
-    image: lscr.io/linuxserver/webgrabplus:latest
+    image: linuxserver/webgrabplus:latest
     container_name: webgrabplus
     hostname: webgrabplus
     mac_address: 02:42:ac:11:ff:ff
