@@ -104,6 +104,22 @@ services:
       - docker_bridge
     restart: always
 
+  webgrabplus:
+    image: linuxserver/webgrabplus:latest
+    container_name: webgrabplus
+    hostname: webgrabplus
+    mac_address: 02:42:ac:11:ff:ff
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=CET
+    volumes:
+      - /opt/containers/webgrabplus/config:/config
+      - /opt/xmltv_data:/data
+    command: /app/update.sh
+    networks:
+      - docker_bridge
+
   # tdarr: # transcode videos automatically
   #   container_name: tdarr
   #   image: ghcr.io/haveagitgat/tdarr:latest
@@ -134,22 +150,6 @@ services:
   #    - /dev/dri:/dev/dri #Required for HW transcoding / QuickSync
   #   networks:
   #     - docker_bridge
-
-  webgrabplus:
-    image: linuxserver/webgrabplus:latest
-    container_name: webgrabplus
-    hostname: webgrabplus
-    mac_address: 02:42:ac:11:ff:ff
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=CET
-    volumes:
-      - /opt/containers/webgrabplus/config:/config
-      - /opt/xmltv_data:/data
-    command: /app/update.sh
-    networks:
-      - docker_bridge
 
   # fileflows:
   #   image: revenz/fileflows

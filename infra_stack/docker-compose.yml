@@ -10,26 +10,8 @@ networks:
 
 volumes:
   prometheus_data: {}
-  netdataconfig:
-  netdatalib:
-  netdatacache:
 
 services:
-  portainer:  ## container manager
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    environment:
-      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      - TZ=CET
-    ports:
-      - 9443:9443/tcp
-    restart: always
-    networks:
-      - docker_bridge
-    volumes:
-      - /opt/containers/portainer:/data
-      - /run/podman/podman.sock:/var/run/docker.sock
-
   homepage:  ## dashboard website
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
@@ -39,14 +21,14 @@ services:
       - TZ=CET
     volumes:
       - /opt/containers/dashboard:/app/config
-      - /run/podman/podman.sock:/var/run/docker.sock:ro ## for docker integration
+      - /run/podman/podman.sock:/var/run/docker.sock:ro
     ports:
       - 8585:3000/tcp
     restart: always
     networks:
       - docker_bridge
 
-  dockerproxy: ## homepage docker integration helper
+  docker_proxy: ## homepage docker integration helper
     image: ghcr.io/tecnativa/docker-socket-proxy:latest
     container_name: dockerproxy
     environment:
@@ -98,7 +80,7 @@ services:
       - GF_SERVER_ENFORCE_DOMAIN=false
       - GR_SERVER_SERVE_FROM_SUB_PATH=true
 
-  tunnel:
+  cloudflare_tunnel:
     container_name: tunnel
     image: cloudflare/cloudflared:latest
     restart: always
@@ -108,10 +90,9 @@ services:
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN}
 
-  nginxproxymanager:
+  nginx_proxy_manager:
     image: jc21/nginx-proxy-manager:latest
     container_name: nginxproxymanager
-    restart: always
     ports:
       - '443:443' # Public HTTPS Port
       - '80:80' # Public HTTP Port
@@ -125,51 +106,7 @@ services:
       - docker_bridge
     restart: always
 
-  grafana-agent:
-    container_name: grafana-agent
-    image: grafana/agent:latest
-    hostname: server
-    command: run --server.http.listen-addr=0.0.0.0:12345 /etc/grafana-agent/
-    environment:
-      - AGENT_MODE=flow
-    # ports:
-    #   - 12345:12345/tcp
-    volumes:
-      - /opt/containers/grafana-agent/config/:/etc/grafana-agent
-      - /sys:/hostfs/sys:ro
-      - /proc:/hostfs/proc:ro
-      - /run/udev:/hostfs/udev:ro
-      - /:/rootfs:ro
-      - /var/log/node_exporter:/var/log/node_exporter:ro
-      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
-    restart: always
-    network_mode: host
-
-  # unpoller:
-  #   image: ghcr.io/unpoller/unpoller:latest
-  #   restart: always
-  #   ports:
-  #     - '9130:9130'
-  #   networks:
-  #     - docker_bridge
-  #   container_name: unpoller
-  #   environment:
-  #     - UP_INFLUXDB_DISABLE=true
-  #     - UP_POLLER_DEBUG=false
-  #     - UP_UNIFI_DYNAMIC=false
-  #     - UP_PROMETHEUS_HTTP_LISTEN=0.0.0.0:9130
-  #     - UP_PROMETHEUS_NAMESPACE=unpoller
-  #     - UP_UNIFI_CONTROLLER_0_PASS=${UNPOLLER_PASSWORD}
-  #     - UP_UNIFI_CONTROLLER_0_SAVE_ALARMS=true
-  #     - UP_UNIFI_CONTROLLER_0_SAVE_ANOMALIES=true
-  #     - UP_UNIFI_CONTROLLER_0_SAVE_DPI=true
-  #     - UP_UNIFI_CONTROLLER_0_SAVE_EVENTS=true
-  #     - UP_UNIFI_CONTROLLER_0_SAVE_IDS=true
-  #     - UP_UNIFI_CONTROLLER_0_SAVE_SITES=true
-  #     - UP_UNIFI_CONTROLLER_0_URL=https://192.168.1.1
-  #     - UP_UNIFI_CONTROLLER_0_USER=unifipoller
-
-  podman-exporter:
+  podman_exporter:
     image: quay.io/navidys/prometheus-podman-exporter:latest
     container_name: podman-exporter
     environment:
@@ -187,3 +124,45 @@ services:
     security_opt:
       - label=disable
     restart: always
+
+  unifi_unpoller:
+    image: ghcr.io/unpoller/unpoller:latest
+    restart: always
+    ports:
+      - '9130:9130'
+    networks:
+      - docker_bridge
+    container_name: unpoller
+    environment:
+      - UP_INFLUXDB_DISABLE=true
+      - UP_POLLER_DEBUG=false
+      - UP_UNIFI_DYNAMIC=false
+      - UP_PROMETHEUS_HTTP_LISTEN=0.0.0.0:9130
+      - UP_PROMETHEUS_NAMESPACE=unpoller
+      - UP_UNIFI_CONTROLLER_0_PASS=${UNPOLLER_PASSWORD}
+      - UP_UNIFI_CONTROLLER_0_SAVE_ALARMS=true
+      - UP_UNIFI_CONTROLLER_0_SAVE_ANOMALIES=true
+      - UP_UNIFI_CONTROLLER_0_SAVE_DPI=true
+      - UP_UNIFI_CONTROLLER_0_SAVE_EVENTS=true
+      - UP_UNIFI_CONTROLLER_0_SAVE_IDS=true
+      - UP_UNIFI_CONTROLLER_0_SAVE_SITES=true
+      - UP_UNIFI_CONTROLLER_0_URL=https://192.168.1.1
+      - UP_UNIFI_CONTROLLER_0_USER=unifi_poller
+
+  grafana_alloy:
+    container_name: grafana-alloy
+    image: grafana/alloy:latest
+    hostname: server
+    command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/
+    ports:
+      - 12345:12345/tcp
+    volumes:
+      - /opt/containers/grafana-alloy/config/:/etc/alloy/
+      - /sys:/hostfs/sys:ro
+      - /proc:/hostfs/proc:ro
+      - /run/udev:/hostfs/udev:ro
+      - /:/rootfs:ro
+      - /var/log/node_exporter:/var/log/node_exporter:ro
+      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
+    restart: always
+    network_mode: host
