@@ -1,0 +1,43 @@
+[Unit]
+Description=Unifi Poller exporter container
+
+[Container]
+Image=ghcr.io/unpoller/unpoller:latest
+ContainerName=unifi-poller
+Network=docker_bridge
+HostName=unifi-poller
+PublishPort=9130:9130
+AutoUpdate=registry
+EnvironmentFile=%d/unifi_unpoller_readonly_pwd
+Environment=UP_INFLUXDB_DISABLE=true
+Environment=UP_POLLER_DEBUG=false
+Environment=UP_UNIFI_DYNAMIC=false
+Environment=UP_PROMETHEUS_HTTP_LISTEN=0.0.0.0:9130
+Environment=UP_PROMETHEUS_NAMESPACE=unpoller
+Environment=UP_UNIFI_CONTROLLER_0_SAVE_ALARMS=true
+Environment=UP_UNIFI_CONTROLLER_0_SAVE_ANOMALIES=true
+Environment=UP_UNIFI_CONTROLLER_0_SAVE_DPI=true
+Environment=UP_UNIFI_CONTROLLER_0_SAVE_EVENTS=true
+Environment=UP_UNIFI_CONTROLLER_0_SAVE_IDS=true
+Environment=UP_UNIFI_CONTROLLER_0_SAVE_SITES=true
+Environment=UP_UNIFI_CONTROLLER_0_URL=https://192.168.1.1
+Environment=UP_UNIFI_CONTROLLER_0_USER=unifi_poller
+
+[Service]
+Restart=always
+TimeoutStartSec=300
+## Setup secret environment variable below
+## echo "UP_UNIFI_CONTROLLER_0_PASS=_REPLACE_PASSWORD_HERE_" > /tmp/unifi-poller | systemd-creds encrypt --pretty --name=unifi_unpoller_readonly_pwd /tmp/unifi-poller -
+SetCredentialEncrypted=unifi_unpoller_readonly_pwd: \
+        k6iUCUh0RJCQyvL8k8q1UyAAAAABAAAADAAAABAAAAAEeSYKhUffvJ47QXQAAAAAgAAAA \
+        AAAAAALACMA8AAAACAAAAAAngAgQyG/znwOFwQoevB1EVmjQTFVKIpErUUdXdeJCbS7qx \
+        MAECk+hVwHxrlMThrjyjI9ofuh/WVtM5IXWyV91tw8pgIbGfGiCc18iETNOc24xw9olw8 \
+        Y29RaypX6WJO7NMuJOyjz6cHi0rHAD3HlcxfnoxsDDkkkQnR5SK4pe2OV2gsy9MjkQeFB \
+        dWUAjiep663fO6hAVjTqpkLzHpYyAE4ACAALAAAEEgAggxNsdUpe/0aRgzaUQc856Oysl \
+        q6grEX9lP3DNNlb5ZsAEAAg6J+6yZVZ6EP14AGvVhbgoOLhoTAJS6hCHkoKjziYQkmDE2 \
+        x1Sl7/RpGDNpRBzzno7KyWrqCsRf2U/cM02VvlmwAAAABaI5nBhBWPdi+XEdzH0pDPPJb \
+        +2kQ4jkTgVhDZiiA/4ceGrINbtM5QFwpsbP4gLbRd485QcQLyNXADAvdEEVMp1IoajVxi \
+        ZMUimbcVcqQFzzfGpzlARUKh6ZjjqI5NFtcnMzUGNwG6f2sshdYGtnXX
+
+[Install]
+WantedBy=multi-user.target default.target
