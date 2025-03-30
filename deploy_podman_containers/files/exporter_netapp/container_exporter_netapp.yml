@@ -1,0 +1,203 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netapp_harvest_config
+data:
+  harvest.yml: |
+    Tools:
+      autosupport_disabled: true
+    Exporters:
+      troy:
+        exporter: Prometheus
+        local_http_addr: 0.0.0.0
+        port: 12990
+        global_prefix: netapp_
+      agora:
+        exporter: Prometheus
+        local_http_addr: 0.0.0.0
+        port: 12991
+        global_prefix: netapp_
+    Pollers:
+      troy:
+        datacenter: EQX
+        addr: troy-cluster.ref.deutsche-boerse.de
+        auth_style: basic_auth
+        username: $__env{NETAPP_HARVEST_READONLY_USERNAME}
+        password: $__env{NETAPP_HARVEST_READONLY_PASSWORD}
+        use_insecure_tls: true
+        exporters:
+          - troy
+        collectors:
+          - Rest
+          - RestPerf
+          - Ems
+      agora:
+        datacenter: EQX
+        addr: agora-cluster.ref.deutsche-boerse.de
+        auth_style: basic_auth
+        username: $__env{NETAPP_HARVEST_READONLY_USERNAME}
+        password: $__env{NETAPP_HARVEST_READONLY_PASSWORD}
+        use_insecure_tls: true
+        exporters:
+          - agora
+        collectors:
+          - Rest
+          - RestPerf
+          - Ems
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netapp_rest_custom_config
+data:
+  custom.yaml: |
+    objects:
+      OntapS3:  ontap_s3.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netapp_restperf_custom_config
+data:
+  custom.yaml: |
+    objects:
+      OntapS3SVM:  ontap_s3_svm.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netapp_health_custom_config
+data:
+  health.yaml: |
+    name:               Health
+    query:              api/cluster
+    object:             health
+    counters:
+      - ^^uuid
+      - ^name
+    plugins:
+      - Health:
+          # Description:
+          # This configuration enables the Health plugin to monitor EMS alerts based on specified severities.
+          # - severity: A list of severities to monitor. Possible values are emergency, alert, error, notice, informational, debug
+          ems:
+            severity:
+              - emergency
+              - alert
+              - error
+    export_data: false
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: exporter_netapp-pod
+spec:
+  volumes:
+  - name: netapp_harvest_config
+    configMap:
+      name: netapp_harvest_config
+  - name: netapp_rest_custom_config
+    configMap:
+      name: netapp_rest_custom_config
+  - name: netapp_restperf_custom_config
+    configMap:
+      name: netapp_restperf_custom_config
+  - name: netapp_health_custom_config
+    configMap:
+      name: netapp_health_custom_config
+  containers:
+  - name: exporter_netapp_agora
+    image: refinst-docker-dev-local.artifactory.dbgcloud.io/netapp_harvest_latest:latest
+    imagePullPolicy: Always
+    securityContext: {}
+    resources:
+      limits:
+        memory: "2Gi"
+        cpu: "2000m"
+    ports:
+    - containerPort: 12991
+    args: ["--poller=agora", "--logformat=json", "--loglevel=3"] ## loglevel=2 is INFO, loglevel=3 is WARNING, loglevel=4 is ERROR
+    env:
+    - name: HTTP_PROXY
+      value: http://192.168.123.254:8080
+    - name: http_proxy
+      value: http://192.168.123.254:8080
+    - name: HTTPS_PROXY
+      value: http://192.168.123.254:8080
+    - name: https_proxy
+      value: http://192.168.123.254:8080
+    - name: NO_PROXY
+      value: 127.0.0.1,localhost,.ref
+    - name: no_proxy
+      value: 127.0.0.1,localhost,.ref
+    - name: NETAPP_HARVEST_READONLY_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: netapp_harvest_readonly_username
+          key: secret
+    - name: NETAPP_HARVEST_READONLY_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: netapp_harvest_readonly_password
+          key: secret
+    volumeMounts:
+      - name: netapp_harvest_config
+        mountPath: /opt/harvest/harvest.yml
+        subPath: harvest.yml
+      - name: netapp_rest_custom_config
+        mountPath: /opt/harvest/conf/rest/custom.yaml
+        subPath: custom.yaml
+      - name: netapp_restperf_custom_config
+        mountPath: /opt/harvest/conf/restperf/custom.yaml
+        subPath: custom.yaml
+      - name: netapp_health_custom_config
+        mountPath: /opt/harvest/conf/rest/9.6.0/health.yaml
+        subPath: health.yaml
+  - name: exporter_netapp_troy
+    image: refinst-docker-dev-local.artifactory.dbgcloud.io/netapp_harvest_latest:latest
+    imagePullPolicy: Always
+    securityContext: {}
+    resources:
+      limits:
+        memory: "2Gi"
+        cpu: "2000m"
+    ports:
+    - containerPort: 12990
+    args: ["--poller=troy", "--logformat=json", "--loglevel=3"] ## loglevel=2 is INFO, loglevel=3 is WARNING, loglevel=4 is ERROR
+    env:
+    - name: HTTP_PROXY
+      value: http://192.168.123.254:8080
+    - name: http_proxy
+      value: http://192.168.123.254:8080
+    - name: HTTPS_PROXY
+      value: http://192.168.123.254:8080
+    - name: https_proxy
+      value: http://192.168.123.254:8080
+    - name: NO_PROXY
+      value: 127.0.0.1,localhost,.ref
+    - name: no_proxy
+      value: 127.0.0.1,localhost,.ref
+    - name: NETAPP_HARVEST_READONLY_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: netapp_harvest_readonly_username
+          key: secret
+    - name: NETAPP_HARVEST_READONLY_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: netapp_harvest_readonly_password
+          key: secret
+    volumeMounts:
+      - name: netapp_harvest_config
+        mountPath: /opt/harvest/harvest.yml
+        subPath: harvest.yml
+      - name: netapp_rest_custom_config
+        mountPath: /opt/harvest/conf/rest/custom.yaml
+        subPath: custom.yaml
+      - name: netapp_restperf_custom_config
+        mountPath: /opt/harvest/conf/restperf/custom.yaml
+        subPath: custom.yaml
+      - name: netapp_health_custom_config
+        mountPath: /opt/harvest/conf/rest/9.6.0/health.yaml
+        subPath: health.yaml

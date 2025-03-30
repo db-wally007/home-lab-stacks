@@ -1,0 +1,43 @@
+---
+
+- name: Create podman kube secrets for "{{ exporter_veeam.container_name }}"
+  containers.podman.podman_secret:
+    name: "{{ item.name }}"
+    state: present
+    force: true
+    data: |
+      apiVersion: v1
+      data:
+        secret: "{{ item.secret | b64encode }}"
+      kind: Secret
+      metadata:
+        name: "{{ item.name }}"
+  loop:
+    - { name: veeam_readonly_username, secret: "{{ exporter_veeam.veeam_username }}" }
+    - { name: veeam_readonly_password, secret: "{{ exporter_veeam.veeam_password }}" }
+  no_log: true
+
+- name: Copy kube manifest file for "{{ exporter_veeam.container_name }}"
+  ansible.builtin.copy:
+    src: "{{ exporter_veeam.container_name }}/container_{{ exporter_veeam.container_name }}.yml"
+    dest: "/etc/containers/systemd/container_{{ exporter_veeam.container_name }}.yml"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+
+- name: Copy quadlet file for "{{ exporter_veeam.container_name }}"
+  ansible.builtin.copy:
+    src: "{{ exporter_veeam.container_name }}/container_{{ exporter_veeam.container_name }}.kube"
+    dest: "/etc/containers/systemd/container_{{ exporter_veeam.container_name }}.kube"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+
+## We have no way of detecting when template image is updated/changed, so we always restart the container
+- name: Restart and enable systemd container_{{ exporter_veeam.container_name }}.service
+  ansible.builtin.systemd:
+    name: "container_{{ exporter_veeam.container_name }}.service"
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
+  throttle: 1

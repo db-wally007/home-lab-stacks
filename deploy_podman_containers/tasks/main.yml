@@ -1,0 +1,50 @@
+---
+
+- name: Install podman exporter and helper services
+  ansible.builtin.import_tasks: podman.yml
+  tags: [always, podman]
+
+- name: Deploy web dashboard container
+  ansible.builtin.import_tasks: web_dashboard.yml
+  tags: [web_dashboard, web_apps]
+
+- name: Deploy web rdf container
+  ansible.builtin.import_tasks: web_rdf.yml
+  tags: [web_rdf, web_apps]
+
+- name: Deploy web ip discard container
+  ansible.builtin.import_tasks: web_discard.yml
+  tags: [web_discard, web_apps]
+
+- name: Deploy web rds container
+  ansible.builtin.import_tasks: web_rds.yml
+  tags: [web_rds, web_apps]
+
+- name: Deploy web gapcheck container
+  ansible.builtin.import_tasks: web_gapcheck.yml
+  tags: [web_gapcheck, web_apps]
+
+- name: Deploy web tq container
+  ansible.builtin.import_tasks: web_tq.yml
+  tags: [web_tq, web_apps]
+
+- name: Deploy grafana alloy container
+  ansible.builtin.import_tasks: grafana_alloy.yml
+  tags: [grafana_alloy, monitoring_apps]
+
+- name: Deploy hp ilo exporter container
+  ansible.builtin.import_tasks: exporter_hpilo.yml
+  tags: [exporter_hpilo, monitoring_apps]
+
+- name: Deploy netapp harvest exporter container
+  ansible.builtin.import_tasks: exporter_netapp.yml
+  tags: [exporter_netapp, monitoring_apps]
+
+- name: Deploy veeam em exporter container
+  ansible.builtin.import_tasks: exporter_veeam.yml
+  tags: [exporter_veeam, monitoring_apps]
+
+- name: Deploy vmware exporter container
+  ansible.builtin.import_tasks: exporter_vmware.yml
+  tags: [exporter_vmware, monitoring_apps]
+

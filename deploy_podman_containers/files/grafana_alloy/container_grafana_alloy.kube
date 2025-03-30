@@ -1,0 +1,16 @@
+[Install]
+WantedBy=multi-user.target default.target
+
+[Unit]
+Description=Container for grafana alloy
+Requires=netavark-firewalld-reload.service
+After=network-online.target netavark-firewalld-reload.service multi-user.target
+
+[Service]
+Restart=always
+TimeoutStartSec=30
+
+[Kube]
+Yaml=container_grafana_alloy.yml
+ConfigMap=container_grafana_alloy_config.alloy.configmap
+ConfigMap=container_grafana_alloy_cisco_snmp.yml_configmap

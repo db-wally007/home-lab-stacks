@@ -1,0 +1,12 @@
+[Unit]
+Description=Prometheus exporter for podman machine
+
+[Service]
+Restart=on-failure
+ExecStart=/usr/bin/prometheus-podman-exporter --collector.enhance-metrics --collector.enable-all --web.listen-address "127.0.0.1:9882"
+ExecReload=/bin/kill -HUP $MAINPID
+TimeoutStopSec=20s
+SendSIGKILL=no
+
+[Install]
+WantedBy=multi-user.target

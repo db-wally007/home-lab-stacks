@@ -1,0 +1,65 @@
+---
+
+- name: Set private key for "web_dashboard"
+  ansible.builtin.set_fact:
+    private_key: "{{ web_dashboard_refinst_user_private_key }}"
+
+- name: Create podman kube secret ssh private key for dgb github auth for "web_dashboard"
+  containers.podman.podman_secret:
+    name: "web_dashboard_ssh_private_key"
+    state: present
+    force: true
+    data: |
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "web_dashboard_ssh_private_key"
+      type: Opaque
+      data:
+        id_rsa: "{{ private_key | b64encode }}"
+  no_log: true
+  become_user: "{{ container_deploy_user | default('root') }}"
+
+- name: Create podman git configmap for "web_dashboard"
+  containers.podman.podman_secret:
+    name: "web_dashboard_configmap"
+    state: present
+    force: true
+    data: |
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "web_dashboard_configmap"
+      data:
+        GIT_REPOSITORY: "{{ web_dashboard_refinst_git_repository | b64encode }}"
+        GIT_BRANCH: "{{ web_dashboard_refinst_git_branch | b64encode }}"
+        GIT_USER_NAME: "{{ web_dashboard_refinst_git_username | b64encode }}"
+        GIT_USER_EMAIL: "{{ web_dashboard_refinst_git_email | b64encode }}"
+  become_user: "{{ container_deploy_user | default('root') }}"
+
+- name: Copy kube manifest file for "web_dashboard"
+  ansible.builtin.copy:
+    src: "{{ web_dashboard_container_files_path }}/container_{{ web_dashboard_container_files_path }}.yml"
+    dest: "/etc/containers/systemd/container_{{ web_dashboard_container_files_path }}.yml"
+    mode: "0644"
+    owner: "{{ container_deploy_user | default('root') }}"
+    group: "root"
+
+- name: Copy quadlet file for "web_dashboard"
+  ansible.builtin.copy:
+    src: "{{ web_dashboard_container_files_path }}/container_{{ web_dashboard_container_files_path }}.kube"
+    dest: "/etc/containers/systemd/container_{{ web_dashboard_container_files_path }}.kube"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  when: container_deploy_user is not defined or container_deploy_user == "root"
+
+## We have no way of detecting when template image is updated/changed, so we always restart the container
+- name: Restart and enable systemd container_{{ web_dashboard_container_files_path }}.service
+  ansible.builtin.systemd:
+    name: "container_{{ web_dashboard_container_files_path }}.service"
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
+  throttle: 1
+  when: container_deploy_user is not defined or container_deploy_user == "root"

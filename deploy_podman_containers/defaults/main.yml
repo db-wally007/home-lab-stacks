@@ -1,0 +1,97 @@
+# vault variables for secrets lookups
+hashi_vault_addr: "{{ lookup('env', 'VAULT_ADDR') }}"
+hashi_vault_role_id: "{{ lookup('env', 'VAULT_ROLE_ID') }}"
+hashi_vault_secret_id: "{{ lookup('env', 'VAULT_SECRET_ID') }}"
+
+# default ansible user
+ansible_ssh_user: "{{ lookup('hashi_vault', 'secret=kv/data/os/rhel/ansible:username auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+ansible_ssh_private_key_file: "{{ lookup('env', 'ANSIBLE_KEY') }}"
+
+# podman exporter container details
+grafana_alloy_user: alloy
+grafana_alloy_group: technical
+
+# web dashboard container variables
+web_dashboard_refinst_user_private_key: "{{ lookup('hashi_vault', 'secret=kv/data/os/rhel/ansible:private_key auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+web_dashboard_refinst_git_username: "refinst-automat"
+web_dashboard_refinst_git_email: "front-end-services@deutsche-boerse.com"
+web_dashboard_refinst_git_repository: "git@github.deutsche-boerse.de:dev/refinst.dashboard.git"
+web_dashboard_refinst_git_branch: "master"
+web_dashboard_container_files_path: "web_dashboard"
+
+# web rds container variables
+web_rds_refinst_user_private_key: "{{ lookup('hashi_vault', 'secret=kv/data/os/rhel/ansible:private_key auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+web_rds_refinst_git_username: "refinst-automat"
+web_rds_refinst_git_email: "front-end-services@deutsche-boerse.com"
+web_rds_refinst_git_repository: "git@github.deutsche-boerse.de:dev/refinst.rds.git"
+web_rds_refinst_git_branch: "master"
+web_rds_container_files_path: "web_rds"
+web_rds_mysql_host: "mysql1.ref"
+web_rds_mysql_username: "{{ lookup('hashi_vault', 'secret=kv/data/mysql/rdi/read_only:username auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+web_rds_mysql_password: "{{ lookup('hashi_vault', 'secret=kv/data/mysql/rdi/read_only:password auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+
+# web rdf container variables
+web_rdf_refinst_user_private_key: "{{ lookup('hashi_vault', 'secret=kv/data/os/rhel/ansible:private_key auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+web_rdf_refinst_git_repository: "git@github.deutsche-boerse.de:dev/refinst.rdf.git"
+web_rdf_refinst_git_branch: "master"
+web_rdf_refinst_git_username: "refinst-automat"
+web_rdf_refinst_git_email: "front-end-services@deutsche-boerse.com"
+web_rdf_container_files_path: "web_rdf"
+
+# web discard container variables
+web_discard_refinst_user_private_key: "{{ lookup('hashi_vault', 'secret=kv/data/os/rhel/ansible:private_key auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+web_discard_refinst_git_username: "refinst-automat"
+web_discard_refinst_git_email: "front-end-services@deutsche-boerse.com"
+web_discard_refinst_git_repository: "git@github.deutsche-boerse.de:wu224/discard.git"
+web_discard_refinst_git_branch: "master"
+web_discard_container_files_path: "web_discard"
+
+# web gapcheck container variables
+web_gapcheck_refinst_user_private_key: "{{ lookup('hashi_vault', 'secret=kv/data/os/rhel/ansible:private_key auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+web_gapcheck_refinst_git_username: "refinst-automat"
+web_gapcheck_refinst_git_email: "front-end-services@deutsche-boerse.com"
+web_gapcheck_refinst_git_repository: "git@github.deutsche-boerse.de:dev/refinst.gapcheck.git"
+web_gapcheck_refinst_git_branch: "master"
+web_gapcheck_container_files_path: "web_gapcheck"
+web_gapcheck_master_mysql_host: "mysql1.ref"
+web_gapcheck_backup_mysql_host: "mysql2.ref"
+web_gapcheck_1gbit_mysql_host: "mysql2.ref"
+web_gapcheck_mysql_username: "{{ lookup('hashi_vault', 'secret=kv/data/mysql/gapcheck/read_only:username auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+web_gapcheck_mysql_password: "{{ lookup('hashi_vault', 'secret=kv/data/mysql/gapcheck/read_only:password auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+
+# web tq container variables
+web_tq_refinst_user_private_key: "{{ lookup('hashi_vault', 'secret=kv/data/os/rhel/ansible:private_key auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+web_tq_refinst_git_username: "refinst-automat"
+web_tq_refinst_git_email: "front-end-services@deutsche-boerse.com"
+web_tq_refinst_git_repository: "git@github.deutsche-boerse.de:dev/refinst.tq.git"
+web_tq_refinst_git_branch: "master"
+web_tq_container_files_path: "web_tq"
+web_tq_mysql_host: "mysql1.ref"
+web_tq_mysql_username: "{{ lookup('hashi_vault', 'secret=kv/data/mysql/tq/readonly:username auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+web_tq_mysql_password: "{{ lookup('hashi_vault', 'secret=kv/data/mysql/tq/readonly:password auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+
+# hpilo exporter container variables
+exporter_hpilo_container_files_path: "exporter_hpilo"
+
+# grafana alloy container variables
+grafana_alloy:
+  container_name: "grafana_alloy"
+  vault_role: "read-grafana-alloy-role" # vault grafana-alloy role name used to read secrets and deploy certificates
+
+# netapp harvest exporter container variables
+exporter_netapp:
+  container_name: "exporter_netapp"
+  netapp_username: "{{ lookup('hashi_vault', 'secret=kv/data/netapp/readonly:username auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+  netapp_password: "{{ lookup('hashi_vault', 'secret=kv/data/netapp/readonly:password auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+
+# veeam exporter container variables
+exporter_veeam:
+  container_name: "exporter_veeam"
+  veeam_username: "{{ lookup('hashi_vault', 'secret=kv/data/veeam/enterprise-manager/readonly:username auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+  veeam_password: "{{ lookup('hashi_vault', 'secret=kv/data/veeam/enterprise-manager/readonly:password auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+
+# vmware exporter container variables
+exporter_vmware:
+  container_name: "exporter_vmware"
+  vmware_username: "{{ lookup('hashi_vault', 'secret=kv/data/vmware/vcenter/readonly:username auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"
+  vmware_password: "{{ lookup('hashi_vault', 'secret=kv/data/vmware/vcenter/readonly:password auth_method=approle role_id={{ hashi_vault_role_id }} secret_id={{ hashi_vault_secret_id }} url={{ hashi_vault_addr }}') }}"

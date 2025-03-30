@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: exporter-veeam-configmap
+data:
+  VEEAM_EM_HOSTNAME: "phobos.ref"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: exporter_veeam-pod
+spec:
+  containers:
+  - name: exporter_veeam
+    image: refinst-docker-dev-local.artifactory.dbgcloud.io/veeam_exporter_latest:latest
+    imagePullPolicy: Always
+    securityContext: {}
+    resources:
+      limits:
+        memory: "2Gi"
+        cpu: "2000m"
+    ports:
+    - containerPort: 9247
+    env:
+    - name: VEEAM_EM_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: veeam_readonly_username
+          key: secret
+    - name: VEEAM_EM_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: veeam_readonly_password
+          key: secret
+    - name: VEEAM_EM_HOSTNAME
+      valueFrom:
+        configMapKeyRef:
+          name: exporter-veeam-configmap
+          key: VEEAM_EM_HOSTNAME
+    command: ["python3", "/usr/local/bin/start.py"]

@@ -1,0 +1,14 @@
+[Install]
+WantedBy=multi-user.target default.target
+
+[Unit]
+Description=Container for web_tq
+Requires=netavark-firewalld-reload.service
+After=network-online.target netavark-firewalld-reload.service multi-user.target
+
+[Service]
+Restart=always
+TimeoutStartSec=30
+
+[Kube]
+Yaml=container_web_tq.yml

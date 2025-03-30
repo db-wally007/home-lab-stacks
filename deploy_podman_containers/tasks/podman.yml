@@ -1,0 +1,128 @@
+---
+
+# By default podman stores containers in the user home folder
+# But RefInst users have homes on NFS, which podman does not support
+- name: Change location for the rootless containers
+  ansible.builtin.lineinfile:
+    search_string: '# rootless_storage_path'
+    path: /etc/containers/storage.conf
+    line: 'rootless_storage_path = "/tmp/containers/$USER"'
+    owner: root
+    group: root
+    mode: "0644"
+    create: false
+
+- name: Change permissions for the rootless container parent folder
+  ansible.builtin.file:
+    state: directory
+    mode: "0770"
+    owner: root
+    group: OS-Support
+    path: "/tmp/containers/"
+
+## https://blog.podman.io/2023/11/new-netavark-firewalld-reload-service/
+- name: Start and enable podman firewalld reload service
+  ansible.builtin.systemd:
+    name: netavark-firewalld-reload
+    state: started
+    enabled: true
+    daemon-reload: true
+
+- name: Install/update podman exporter
+  ansible.builtin.dnf:
+    name:
+      - prometheus-podman-exporter
+    state: latest
+
+- name: Copy podman exporter service file
+  ansible.builtin.copy:
+    src: podman/prometheus-podman-exporter.service
+    dest: /etc/systemd/system/prometheus-podman-exporter.service
+    mode: "0644"
+    owner: root
+    group: root
+  notify: Restart podman exporter
+
+- name: Start and enable podman exporter service
+  ansible.builtin.systemd:
+    name: prometheus-podman-exporter
+    state: started
+    enabled: true
+    daemon-reload: true
+
+- name: Copy grafana-alloy podman config to the podman host
+  ansible.builtin.copy:
+    src: podman/prometheus_scrape_podman_exporter.alloy
+    dest: /etc/grafana-alloy/prometheus_scrape_podman_exporter.alloy
+    mode: "0644"
+    owner: "{{ grafana_alloy_user }}"
+    group: "{{ grafana_alloy_group }}"
+  notify: Grafana-alloy service reload
+
+## PODMAN SUBUID SECTION ##
+- name: Extract and add usernames to the podman users list
+  ansible.builtin.set_fact:
+    podman_users: "{{ [container_deploy_user] }}"
+  when: container_deploy_user is defined
+
+- name: Get subuid content
+  ansible.builtin.command: cat /etc/subuid
+  register: initial_subuid_content
+  changed_when: false
+  when: podman_users is defined
+
+- name: Memorize existing highest subuid
+  ansible.builtin.set_fact:
+    initial_highest_subuid: "{{ initial_subuid_content.stdout_lines[-1].split(':')[1] }}"
+  when: podman_users is defined
+
+- name: Memorize existing subuid users
+  ansible.builtin.set_fact:
+    initial_users_in_subuid: "{{ initial_subuid_content.stdout_lines | map('split', ':') | map('first') | list }}"
+  when: podman_users is defined
+
+- name: Set subuid
+  ansible.builtin.lineinfile:
+    path: "/etc/subuid"
+    regexp: "{{ podman_users[0] }}"
+    line: "{{ podman_users[0] }}:{{ initial_highest_subuid | int + 65536 }}:65536"
+    backup: false
+    create: true
+    mode: "0644"
+    owner: root
+    group: root
+  when: podman_users is defined and podman_users[0] not in initial_users_in_subuid
+
+## PODMAN SUBGID SECTION ##
+- name: Extract and add usernames to the podman group list
+  ansible.builtin.set_fact:
+    podman_users: "{{ [container_deploy_user] }}"
+  when: container_deploy_user is defined
+
+- name: Get subgid content
+  ansible.builtin.command: cat /etc/subgid
+  register: initial_subgid_content
+  changed_when: false
+  when: podman_users is defined
+
+- name: Memorize existing highest subgid
+  ansible.builtin.set_fact:
+    initial_highest_subgid: "{{ initial_subgid_content.stdout_lines[-1].split(':')[1] }}"
+  when: podman_users is defined
+
+- name: Memorize existing subgid users
+  ansible.builtin.set_fact:
+    initial_users_in_subgid: "{{ initial_subgid_content.stdout_lines | map('split', ':') | map('first') | list }}"
+  when: podman_users is defined
+
+- name: Set subgid
+  ansible.builtin.lineinfile:
+    path: "/etc/subgid"
+    regexp: "{{ podman_users[0] }}"
+    line: "{{ podman_users[0] }}:{{ initial_highest_subgid | int + 65536 }}:65536"
+    backup: false
+    create: true
+    mode: "0644"
+    owner: root
+    group: root
+  when: podman_users is defined and podman_users[0] not in initial_users_in_subgid
