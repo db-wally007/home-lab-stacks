@@ -1,0 +1,47 @@
+---
+#### YAML inventory file
+
+# the two first lines above are needed for the script
+# to identify the file as an inventory file
+
+## Structure
+# hosts:
+#   - host: <HOSTNAME>
+#     # if needed
+#     groups:
+#       - group1
+#       - group2
+
+##########################
+###  Hosts definition  ###
+##########################
+hosts:
+  - host: vlado1
+    groups: [personal_vm_group]
+    hostvars:
+      category: "vm"
+      group_access_rights: [""] ## Group(s) allowed to login
+      group_sudo_rights: [""] ## Group(s) allowed to run sudo
+      additional_user_access_rights: [""] ## Additional user(s) allowed to login
+      additional_user_sudo_rights: [""] ## Additional user(s) allowed to run sudo
+      hw_type: "virtual"
+      os: "rhel9"
+      init_vcenter: ""
+      init_cluster: ""
+      init_datacenter: ""
+      init_template: "template"
+      init_vcores: "2"
+      init_ram: "8"
+      init_storage:
+        disk0:
+          size_gb: "200"
+          datastore: ""
+          type: "thin"
+      init_net_domain: ""
+      init_net_dns: ""
+      init_net_dns_suffix: ""
+      init_ifcfg:
+        ref:
+          ipaddr: ""
+          mask: ""
+          gateway: ""
