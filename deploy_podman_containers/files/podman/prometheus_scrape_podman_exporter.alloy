@@ -1,7 +1,0 @@
-prometheus.scrape "podman_exporter" {
-	targets         = [ { "__address__" = "127.0.0.1:9882", "instance" = sys.env("HOSTNAME") }, ]
-	forward_to      = [prometheus.remote_write.mimir.receiver]
-	job_name        = "podman-20s"
-	scrape_interval = "20s"
-	metrics_path    = "/metrics"
-}
